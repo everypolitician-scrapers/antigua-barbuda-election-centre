@@ -48,7 +48,7 @@ def scrape_constituency(url)
       party: tds[2].text.tidy,
       term: tds[0].text.tidy,
       constituency: constituency,
-      # source: url.to_s,
+      source: url.to_s,
     }
     mp_link = tds[1].css('a/@href')
     unless mp_link.to_s.empty?
