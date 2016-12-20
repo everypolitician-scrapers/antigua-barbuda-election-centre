@@ -62,14 +62,4 @@ end
 
 # scrape_list('http://www.caribbeanelections.com/blog/?p=4101')
 
-%w(1971 1976 1980 1984 1989 1994 1999 2004 2009 2014 2019).each_cons(2) do |s, e|
-  term = { 
-    id: s,
-    name: "#{s}–#{e}",
-    start_date: s,
-    end_date: e, 
-  }
-  ScraperWiki.save_sqlite([:id], term, 'terms')
-end
-
 scrape_list('http://www.caribbeanelections.com/ag/election2014/candidates/default.asp')
