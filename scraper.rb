@@ -1,5 +1,6 @@
 #!/bin/env ruby
 # encoding: utf-8
+# frozen_string_literal: true
 
 require 'scraperwiki'
 require 'nokogiri'
@@ -11,22 +12,22 @@ OpenURI::Cache.cache_path = '.cache'
 
 class String
   def tidy
-    self.gsub(/[[:space:]]+/, ' ').strip
+    gsub(/[[:space:]]+/, ' ').strip
   end
 end
 
 def noko_for(url)
-  Nokogiri::HTML(open(url).read) 
+  Nokogiri::HTML(open(url).read)
 end
 
 def scrape_mp(url)
   noko = noko_for(url)
-  data = { 
-    image: noko.css('img[@src*="/people/"]').sort_by { |i| i.attr('width') }.first.attr('src'),
+  data = {
+    image:    noko.css('img[@src*="/people/"]').sort_by { |i| i.attr('width') }.first.attr('src'),
     facebook: noko.css('a.inside[@href*="facebook.com"]/@href').text,
   }
   data[:image] = URI.join(url, data[:image]).to_s unless data[:image].to_s.empty?
-  return data
+  data
 end
 
 def scrape_list(url)
@@ -42,12 +43,12 @@ def scrape_constituency(url)
   puts constituency
   noko.xpath('.//span[@class="votes" and contains(.,"Representatives")]/ancestor::table[1]/tr[2]//table/tr').drop(1).each do |tr|
     tds = tr.css('td')
-    data = { 
-      name: tds[1].text.tidy,
-      party: tds[2].text.tidy,
-      term: tds[0].text.tidy,
+    data = {
+      name:         tds[1].text.tidy,
+      party:        tds[2].text.tidy,
+      term:         tds[0].text.tidy,
       constituency: constituency,
-      source: url.to_s,
+      source:       url.to_s,
     }
     mp_link = tds[1].css('a/@href')
     unless mp_link.to_s.empty?
@@ -55,7 +56,7 @@ def scrape_constituency(url)
       data.merge! new_data
     end
     # puts data
-    ScraperWiki.save_sqlite([:name, :term], data)
+    ScraperWiki.save_sqlite(%i(name term), data)
   end
 end
 
